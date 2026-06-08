@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SanitizerAI Suite · Intelligent Payment System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="footer.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ============================================================
+     AUTH OVERLAY — shown until user chooses guest or logs in
+     ============================================================ -->
+<div id="auth-overlay" class="auth-overlay">
+    <div class="auth-card">
+        <img src="SanitizerAI.png" alt="SanitizerAI Suite" class="auth-logo">
+        <div class="auth-slogan">Intelligent Payment System</div>
+
+        <!-- Tab switcher -->
+        <div class="auth-tabs">
+            <button class="auth-tab active" id="tab-login"    onclick="showAuthTab('login')">Sign In</button>
+            <button class="auth-tab"        id="tab-register" onclick="showAuthTab('register')">Register</button>
+        </div>
+
+        <!-- Login form -->
+        <div id="auth-login-form" class="auth-form">
+            <div class="auth-field">
+                <label class="auth-label">Username</label>
+                <input id="login-username" class="auth-input" type="text" placeholder="your_username" autocomplete="username">
+            </div>
+            <div class="auth-field">
+                <label class="auth-label">Password</label>
+                <input id="login-password" class="auth-input" type="password" placeholder="••••••••" autocomplete="current-password">
+            </div>
+            <div id="login-error" class="auth-error" style="display:none;"></div>
+            <button class="auth-submit" id="login-btn" onclick="handleLogin()">
+                <span id="login-btn-text">Sign In</span>
+            </button>
+            <div class="auth-divider"><span>or</span></div>
+            <button class="auth-guest-btn" onclick="enterGuestMode()">
+                Continue as Guest
+                <span class="auth-guest-note">Free · browser only · no account needed</span>
+            </button>
+        </div>
+
+        <!-- Register form -->
+        <div id="auth-register-form" class="auth-form" style="display:none;">
+            <div class="auth-perks">
+                <div class="auth-perk">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    Data saved to database — access from any device
+                </div>
+                <div class="auth-perk">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    Private — only you can see your records
+                </div>
+                <div class="auth-perk">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    Control Center with approval workflows
+                </div>
+            </div>
+            <div class="auth-field">
+                <label class="auth-label">Username</label>
+                <input id="reg-username" class="auth-input" type="text" placeholder="choose_a_username" autocomplete="username">
+            </div>
+            <div class="auth-field">
+                <label class="auth-label">Password</label>
+                <input id="reg-password" class="auth-input" type="password" placeholder="min 6 characters" autocomplete="new-password">
+            </div>
+            <div class="auth-field">
+                <label class="auth-label">Confirm Password</label>
+                <input id="reg-confirm" class="auth-input" type="password" placeholder="repeat password" autocomplete="new-password">
+            </div>
+            <div id="register-error" class="auth-error" style="display:none;"></div>
+            <button class="auth-submit" id="register-btn" onclick="handleRegister()">
+                <span id="register-btn-text">Create Account</span>
+            </button>
+            <div class="auth-divider"><span>or</span></div>
+            <button class="auth-guest-btn" onclick="enterGuestMode()">
+                Continue as Guest
+                <span class="auth-guest-note">Browser only — data lost on clear</span>
+            </button>
+        </div>
+
+        <div class="auth-footer-note">Guest mode is free forever. Register to save data to the cloud.</div>
+    </div>
+</div>
+
+<div class="app-container" id="app-container" style="display:none;">
+
+    <!-- DESKTOP SIDEBAR -->
+    <nav class="desktop-sidebar">
+        <div class="sidebar-logo-wrap">
+            <img src="SanitizerAI.png" alt="SanitizerAI Suite" class="sidebar-logo-img">
+            <div class="sidebar-slogan">Intelligent Payment System</div>
+        </div>
+
+        <div class="sidebar-section-label">MODULES</div>
+        <div class="nav-group">
+            <button class="nav-btn active" data-target="intake-app">
+                <span class="nav-icon">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                </span>
+                Document Ingestion
+            </button>
+            <button class="nav-btn" data-target="ledger-app">
+                <span class="nav-icon">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                </span>
+                Central Ledger
+            </button>
+            <button class="nav-btn" data-target="payout-app">
+                <span class="nav-icon">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </span>
+                EFT Batch Pay
+            </button>
+            <button class="nav-btn" data-target="invoice-app">
+                <span class="nav-icon">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                </span>
+                Invoice Generator
+            </button>
+            <button class="nav-btn" data-target="control-center-app">
+                <span class="nav-icon">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                </span>
+                Control Center
+            </button>
+        </div>
+
+        <div class="sidebar-footer">
+            <div id="sidebar-user-badge" class="sidebar-user-badge" style="display:none;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span id="sidebar-username">—</span>
+            </div>
+            <div class="status-dot-wrapper">
+                <span class="status-dot"></span>
+                <span class="status-label">System Online</span>
+            </div>
+            <button class="auth-logout-btn" onclick="handleLogout()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Sign Out
+            </button>
+        </div>
+    </nav>
+
+    <!-- MAIN WORKSPACE -->
+    <main class="main-workspace">
+
+        <!-- ============ MOBILE HEADER (logo shown on mobile only) ============ -->
+        <div class="mobile-topbar">
+            <img src="SanitizerAI.png" alt="SanitizerAI Suite" class="mobile-logo-img">
+            <div class="mobile-slogan">Intelligent Payment System</div>
+        </div>
+
+        <!-- GUEST MODE BANNER (shown when not logged in) -->
+        <div id="guest-banner" class="guest-banner" style="display:none;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span>Guest mode — data saved in browser only. <button class="guest-register-link" onclick="showAuthOverlay()">Register free</button> to save to the cloud.</span>
+        </div>
+
+        <!-- ============ SCREEN 1: INTAKE ============ -->
+        <section id="intake-app" class="app-screen active-screen">
+            <div class="screen-header">
+                <div class="screen-logo-chip">
+                    <img src="Scanner.png" alt="SanitizerAI Suite" class="chip-logo-img">
+                    <span class="chip-label">Document Ingestion</span>
+                </div>
+                <h2>Capture Dashboard</h2>
+                <p>Extract invoice sheets or messaging logs instantly via upload or text dump.</p>
+            </div>
+            <div class="card">
+                <label for="file-input" class="upload-zone" id="upload-zone">
+                    <div class="upload-icon-wrap">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    </div>
+                    <strong>Snap or Drop Receipt Photo</strong>
+                    <span class="upload-sub">JPG, PNG, HEIC accepted · Max 10MB</span>
+                    <input type="file" id="file-input" accept="image/*">
+                </label>
+
+                <div class="divider-text">or paste a text message log</div>
+
+                <textarea id="text-input" class="text-input" placeholder="Example: Sipho here, total outstanding is R3200 for plumbing. Bank FNB."></textarea>
+                <button class="btn-action" id="process-btn">
+                    <span>Process &amp; Extract</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- ============ SCREEN 2: LEDGER ============ -->
+        <section id="ledger-app" class="app-screen">
+            <div class="screen-header">
+                <div class="screen-logo-chip">
+                    <img src="Ledger.png" alt="SanitizerAI Suite" class="chip-logo-img">
+                    <span class="chip-label">Central Ledger</span>
+                </div>
+                <h2>Audited Ledger</h2>
+                <p>Central clean registry tracking all contractor details and payment status.</p>
+            </div>
+            <div class="card">
+                <div class="demo-notice">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    <span>The entry below is a <strong>demo record only</strong> — it cannot be downloaded or invoiced. Use the Scanner to add real entries.</span>
+                </div>
+                <div id="records-list-target">
+                    <!-- DEMO card — locked -->
+                    <div class="mobile-record-card demo-card">
+                        <div class="card-row-top">
+                            <span class="target-name">Alex J</span>
+                            <span class="price-text">R2,800.00</span>
+                        </div>
+                        <div class="card-details-row">
+                            <span>14 units logged</span>
+                            <span class="bank-tag">CAPITEC</span>
+                        </div>
+                        <div class="demo-locked-msg">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            Demo entry — locked &amp; not downloadable
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ SCREEN 3: EFT PAYOUT ============ -->
+        <section id="payout-app" class="app-screen">
+            <div class="screen-header">
+                <div class="screen-logo-chip">
+                    <img src="Eft.png" alt="SanitizerAI Suite" class="chip-logo-img">
+                    <span class="chip-label">EFT Batch Pay</span>
+                </div>
+                <h2>EFT Clearing Batches</h2>
+                <p>Unpaid queue items grouped by banking institution for your detected region.</p>
+            </div>
+
+            <div class="card region-card">
+                <div class="region-row">
+                    <div class="region-label">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                        <strong id="region-display">Detecting region…</strong>
+                    </div>
+                    <select id="region-override" class="region-select" onchange="applyRegionOverride(this.value)">
+                        <option value="">Auto-detect</option>
+                        <option value="ZA">🇿🇦 South Africa</option>
+                        <option value="US">🇺🇸 United States</option>
+                        <option value="GB">🇬🇧 United Kingdom</option>
+                        <option value="EU">🇪🇺 Europe (SEPA)</option>
+                        <option value="AU">🇦🇺 Australia</option>
+                        <option value="NG">🇳🇬 Nigeria</option>
+                        <option value="KE">🇰🇪 Kenya</option>
+                        <option value="IN">🇮🇳 India</option>
+                        <option value="AE">🇦🇪 UAE</option>
+                        <option value="CA">🇨🇦 Canada</option>
+                        <option value="SG">🇸🇬 Singapore</option>
+                        <option value="GH">🇬🇭 Ghana</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="bank-queues-container"></div>
+        </section>
+
+        <!-- ============ SCREEN 4: INVOICE ============ -->
+        <section id="invoice-app" class="app-screen">
+            <div class="screen-header">
+                <div class="screen-logo-chip">
+                    <img src="Invoices.png" alt="SanitizerAI Suite" class="chip-logo-img">
+                    <span class="chip-label">Invoice Generator</span>
+                </div>
+                <h2>Invoice Generator</h2>
+                <p>Convert verified system rows into client-facing invoice documentation.</p>
+            </div>
+
+            <!-- DEMO notice for the default invoice -->
+            <div class="demo-notice" id="invoice-demo-notice">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                <span>This is a <strong>demo invoice</strong>. Add a real entry via Scanner, then tap <em>Generate Invoice</em> to create a downloadable one.</span>
+            </div>
+
+            <!-- Invoice paper — always visible (demo by default) -->
+            <div class="invoice-paper-mock" id="invoice-printable">
+                <div class="invoice-brand-header">
+                    <div class="invoice-logo-area">
+                        <img src="SanitizerAI.png" alt="SanitizerAI Suite" class="invoice-logo-img">
+                    </div>
+                    <div class="invoice-meta-right">
+                        <div class="inv-label">TAX INVOICE</div>
+                        <div class="inv-number" id="inv-number">INV-DEMO-0000</div>
+                        <div class="inv-date" id="inv-date"></div>
+                    </div>
+                </div>
+
+                <div class="invoice-divider"></div>
+
+                <div class="invoice-parties">
+                    <div class="invoice-party">
+                        <div class="party-label">PREPARED FOR</div>
+                        <div class="party-name" id="inv-client-target">Alex J</div>
+                        <div class="party-sub" id="inv-region-sub">South Africa · CAPITEC</div>
+                    </div>
+                    <div class="invoice-party right">
+                        <div class="party-label">ISSUED BY</div>
+                        <div class="party-name">SanitizerAI Suite</div>
+                        <div class="party-sub">Verified Payment Intelligence</div>
+                    </div>
+                </div>
+
+                <!-- Regional bank details block -->
+                <div class="bank-details-block" id="bank-details-block">
+                    <div class="bank-details-title">BANKING / PAYMENT DETAILS</div>
+                    <div class="bank-details-grid" id="bank-details-grid">
+                        <!-- Populated by JS based on region -->
+                    </div>
+                </div>
+
+                <table class="invoice-line-items">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Payment Rail</th>
+                            <th class="text-right">Amount Due</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="inv-desc-field">Demo: Contractor service items — replace with a real entry from Scanner.</td>
+                            <td id="inv-bank-field">EFT</td>
+                            <td class="text-right amount-cell" id="inv-price-field">R2,800.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="invoice-total-row">
+                    <span>TOTAL SETTLEMENT VALUE</span>
+                    <span class="total-amount" id="inv-total-field">R2,800.00</span>
+                </div>
+
+                <div class="invoice-footer-note">
+                    Generated by SanitizerAI Suite · Intelligent Payment System · Confidential Financial Document
+                </div>
+            </div>
+
+            <!-- Action buttons — only real invoices can download PDF -->
+            <div class="invoice-btn-grid">
+                <button class="btn-export btn-pdf" id="btn-pdf-download">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Download PDF
+                </button>
+                <button class="btn-export btn-whatsapp" onclick="triggerWhatsAppSend()">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    WhatsApp
+                </button>
+            </div>
+        </section>
+
+        <!-- ============ SCREEN 5: CONTROL CENTER ============ -->
+        <section id="control-center-app" class="app-screen">
+            <div class="screen-header">
+                <div class="screen-logo-chip">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a6db5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span class="chip-label">Control Center</span>
+                </div>
+                <h2>Control Center</h2>
+                <p>Review and approve pending documents and transactions before they enter the ledger.</p>
+            </div>
+
+            <div class="card" style="padding:14px 16px; margin-bottom:14px;">
+                <div class="region-row" style="flex-wrap:wrap; gap:10px;">
+                    <span class="region-label">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        <strong id="cc-last-refresh">Not yet loaded</strong>
+                    </span>
+                    <button class="btn-csv" id="cc-refresh-btn" onclick="loadControlCenter()" style="padding:7px 14px; font-size:0.75rem;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                        Refresh
+                    </button>
+                    <button class="btn-csv" onclick="sendTestWebhook()" style="padding:7px 14px; font-size:0.75rem; color:#7c3aed; border-color:rgba(124,58,237,0.3);">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        Test Webhook
+                    </button>
+                </div>
+            </div>
+
+            <div id="cc-summary-bar" class="cc-summary-bar" style="display:none;"></div>
+            <div id="cc-items-list"></div>
+        </section>
+
+    </main>
+</div>
+
+</div>  <!-- /app-container -->
+
+<!-- MOBILE BOTTOM NAV -->
+<nav class="mobile-nav-bar">
+    <button id="tab-intake-app" class="mobile-tab active" data-target="intake-app">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Scanner</span>
+    </button>
+    <button id="tab-ledger-app" class="mobile-tab" data-target="ledger-app">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        <span>Ledger</span>
+    </button>
+    <button id="tab-payout-app" class="mobile-tab" data-target="payout-app">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <span>EFT Pay</span>
+    </button>
+    <button id="tab-invoice-app" class="mobile-tab" data-target="invoice-app">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span>Invoices</span>
+    </button>
+    <button id="tab-control-center-app" class="mobile-tab" data-target="control-center-app">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>Control</span>
+    </button>
+</nav>
+
+  <footer class="wtf-footer">
+    <div class="wtf-footer-top">
+      <span class="wtf-footer-copy">© 2025 - 2026 Solontrich System</span>
+    </div>
+    <div class="wtf-footer-bottom">
+      <span class="wtf-footer-copy">All rights reserved.</span>
+      <a href="Solontrich.html" class="wtf-footer-creator" title="Visit Solontrich">
+        <span class="wtf-footer-creator-label">Built by</span>
+        <img src="Solontrich.png" alt="Solontrich" class="wtf-footer-creator-logo"/>
+        <span class="wtf-footer-creator-name">Solontrich</span>
+      </a>
+    </div>
+  </footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
