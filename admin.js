@@ -8,7 +8,7 @@
 // ── CONFIG ──────────────────────────────────────────────────
 const SUPABASE_URL      = "https://qlkzyzvkqioisnpfslsk.supabase.co";
 const SUPABASE_ANON     = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsa3p5enZrcWlvaXNucGZzbHNrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODExMjc2ODUsImV4cCI6MjA5NjcwMzY4NX0.3N-x3FgGfyRmL9EmkuWs474VHwzGGXZtsFfEYxyk5lc";
-const SERVICE_KEY       = "PASTE_YOUR_NEW_SERVICE_ROLE_KEY_HERE";
+const SERVICE_KEY       = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFsa3p5enZrcWlvaXNucGZzbHNrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTEyNzY4NSwiZXhwIjoyMDk2NzAzNjg1fQ.H5_n2zLL4T-5B_IdLYCxkjgb9yOYXsPQlBHORRLbK-o";
 const MAKE_API_BASE     = "https://eu1.make.com/api/v2";
 const MAKE_TEAM_ID      = 1889489;
 const ADMIN_PASSWORD    = "sanitizerai_admin_2024";   // ← change this
