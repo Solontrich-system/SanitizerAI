@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SanitizerAI — Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<!-- ── MOBILE SIDEBAR OVERLAY ── -->
+<div id="admin-sidebar-overlay" class="admin-sidebar-overlay" onclick="toggleMobileSidebar()"></div>
+
+<!-- ── AUTH GATE ── -->
+<div id="admin-auth" class="admin-auth">
+    <div class="admin-auth-card">
+        <div class="admin-auth-logo">
+            <img src="SanitizerAI.png" alt="SanitizerAI Suite" class="admin-logo-img">
+            <div class="admin-auth-badge">ADMIN</div>
+        </div>
+        <p class="admin-auth-sub">Restricted access — administrators only</p>
+        <div class="admin-auth-field">
+            <label class="admin-auth-label">Admin Password</label>
+            <input id="admin-pw-input" class="admin-auth-input" type="password" placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <div id="admin-auth-error" class="admin-auth-error" style="display:none;">Incorrect password.</div>
+        <button class="admin-auth-btn" onclick="adminLogin()">Enter Dashboard</button>
+        <div class="admin-auth-hint">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Update <code>SERVICE_KEY</code> in admin.js after first login.
+        </div>
+    </div>
+</div>
+
+<!-- ── DASHBOARD ── -->
+<div id="admin-dashboard" class="admin-dashboard" style="display:none;">
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar" id="admin-sidebar">
+        <div class="admin-sidebar-top">
+            <div class="admin-sidebar-brand">
+                <img src="SanitizerAI.png" alt="SanitizerAI Suite" class="admin-logo-img-sm">
+                <div class="admin-sidebar-badge">ADMIN</div>
+            </div>
+
+            <nav class="admin-nav">
+                <button class="admin-nav-btn active" data-view="overview" onclick="switchView('overview', this)">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    Overview
+                </button>
+                <button class="admin-nav-btn" data-view="users" onclick="switchView('users', this)">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    Users
+                </button>
+                <button class="admin-nav-btn" data-view="transactions" onclick="switchView('transactions', this)">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    Transactions
+                </button>
+                <button class="admin-nav-btn" data-view="documents" onclick="switchView('documents', this)">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    Documents
+                </button>
+                <button class="admin-nav-btn" data-view="logs" onclick="switchView('logs', this)">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    System Logs
+                </button>
+                <button class="admin-nav-btn" data-view="make" onclick="switchView('make', this)">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    Make Scenarios
+                </button>
+            </nav>
+        </div>
+
+        <div class="admin-sidebar-footer">
+            <div class="admin-system-status">
+                <span class="admin-pulse"></span>
+                <span class="admin-status-text" id="admin-status-text">Connecting…</span>
+            </div>
+            <div class="admin-sidebar-time" id="admin-clock">—</div>
+            <button class="admin-logout-btn" onclick="adminLogout()">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Sign Out
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-main">
+
+        <!-- TOP BAR -->
+        <header class="admin-topbar">
+            <div class="admin-topbar-left">
+                <button class="admin-hamburger" id="admin-hamburger" onclick="toggleMobileSidebar()" aria-label="Open menu">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                </button>
+                <div>
+                    <h1 class="admin-page-title" id="admin-page-title">Overview</h1>
+                    <span class="admin-page-sub" id="admin-page-sub">System-wide metrics and health</span>
+                </div>
+            </div>
+            <div class="admin-topbar-right">
+                <button class="admin-refresh-btn" onclick="refreshCurrentView()" id="admin-refresh-btn">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                    <span class="admin-refresh-label">Refresh</span>
+                </button>
+                <div class="admin-last-updated" id="admin-last-updated">—</div>
+            </div>
+        </header>
+
+        <!-- ═══ VIEW: OVERVIEW ═══ -->
+        <section id="view-overview" class="admin-view active">
+            <div class="admin-stat-grid" id="overview-stats">
+                <div class="admin-stat-card skeleton"></div>
+                <div class="admin-stat-card skeleton"></div>
+                <div class="admin-stat-card skeleton"></div>
+                <div class="admin-stat-card skeleton"></div>
+            </div>
+
+            <div class="admin-grid-2">
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <span class="admin-card-title">Recent Transactions</span>
+                        <button class="admin-card-link" onclick="switchView('transactions', document.querySelector('[data-view=transactions]'))">View all →</button>
+                    </div>
+                    <div id="overview-recent-txns" class="admin-table-wrap">
+                        <div class="admin-loading">Loading…</div>
+                    </div>
+                </div>
+                <div class="admin-card">
+                    <div class="admin-card-header">
+                        <span class="admin-card-title">System Log Feed</span>
+                        <button class="admin-card-link" onclick="switchView('logs', document.querySelector('[data-view=logs]'))">View all →</button>
+                    </div>
+                    <div id="overview-log-feed" class="admin-log-feed">
+                        <div class="admin-loading">Loading…</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ VIEW: USERS ═══ -->
+        <section id="view-users" class="admin-view">
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <span class="admin-card-title">Registered Users</span>
+                    <span class="admin-card-count" id="users-count">—</span>
+                </div>
+                <div id="users-table-wrap" class="admin-table-wrap">
+                    <div class="admin-loading">Loading…</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ VIEW: TRANSACTIONS ═══ -->
+        <section id="view-transactions" class="admin-view">
+            <div class="admin-filter-bar">
+                <select class="admin-select" id="txn-status-filter" onchange="loadTransactions()">
+                    <option value="">All statuses</option>
+                    <option value="pending_review">Pending Review</option>
+                    <option value="verified">Verified</option>
+                    <option value="rejected">Rejected</option>
+                </select>
+                <select class="admin-select" id="txn-limit-filter" onchange="loadTransactions()">
+                    <option value="50">50 rows</option>
+                    <option value="100">100 rows</option>
+                    <option value="250">250 rows</option>
+                </select>
+            </div>
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <span class="admin-card-title">All Transactions</span>
+                    <span class="admin-card-count" id="txn-count">—</span>
+                </div>
+                <div id="txn-table-wrap" class="admin-table-wrap">
+                    <div class="admin-loading">Loading…</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ VIEW: DOCUMENTS ═══ -->
+        <section id="view-documents" class="admin-view">
+            <div class="admin-filter-bar">
+                <select class="admin-select" id="doc-status-filter" onchange="loadDocuments()">
+                    <option value="">All statuses</option>
+                    <option value="pending_review">Pending Review</option>
+                    <option value="processed">Processed</option>
+                    <option value="failed">Failed</option>
+                    <option value="manual_queue">Manual Queue</option>
+                </select>
+            </div>
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <span class="admin-card-title">All Documents</span>
+                    <span class="admin-card-count" id="doc-count">—</span>
+                </div>
+                <div id="doc-table-wrap" class="admin-table-wrap">
+                    <div class="admin-loading">Loading…</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ VIEW: SYSTEM LOGS ═══ -->
+        <section id="view-logs" class="admin-view">
+            <div class="admin-filter-bar">
+                <select class="admin-select" id="log-type-filter" onchange="loadLogs()">
+                    <option value="">All events</option>
+                    <option value="heartbeat">Heartbeat</option>
+                    <option value="pulse_summary">Pulse Summary</option>
+                    <option value="document_ingestion">Document Ingestion</option>
+                </select>
+                <select class="admin-select" id="log-status-filter" onchange="loadLogs()">
+                    <option value="">All statuses</option>
+                    <option value="success">Success</option>
+                    <option value="warning">Warning</option>
+                    <option value="error">Error</option>
+                </select>
+                <select class="admin-select" id="log-limit-filter" onchange="loadLogs()">
+                    <option value="100">100 rows</option>
+                    <option value="250">250 rows</option>
+                    <option value="500">500 rows</option>
+                </select>
+            </div>
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <span class="admin-card-title">System Logs</span>
+                    <span class="admin-card-count" id="log-count">—</span>
+                </div>
+                <div id="log-table-wrap" class="admin-table-wrap">
+                    <div class="admin-loading">Loading…</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══ VIEW: MAKE SCENARIOS ═══ -->
+        <section id="view-make" class="admin-view">
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <span class="admin-card-title">Make Automation Scenarios</span>
+                    <span class="admin-card-count" id="make-count">—</span>
+                </div>
+                <div id="make-scenarios-wrap">
+                    <div class="admin-loading">Loading…</div>
+                </div>
+            </div>
+            <div class="admin-card" style="margin-top:16px;">
+                <div class="admin-card-header">
+                    <span class="admin-card-title">Webhook</span>
+                </div>
+                <div class="admin-webhook-display">
+                    <span class="admin-webhook-label">Document Ingestion URL</span>
+                    <div class="admin-webhook-row">
+                        <code class="admin-webhook-url" id="admin-webhook-url">https://hook.eu1.make.com/5lt8s62lqbjfpw3f8hblfowax24catvf</code>
+                        <button class="admin-copy-btn" onclick="copyWebhook()">Copy</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- TOAST -->
+<div id="admin-toast" class="admin-toast" style="display:none;"></div>
+
+<script src="admin.js"></script>
+<script>
+// Mobile sidebar toggle (injected here so it's always available)
+function toggleMobileSidebar() {
+    const sidebar = document.getElementById("admin-sidebar");
+    const overlay = document.getElementById("admin-sidebar-overlay");
+    const isOpen  = sidebar.classList.contains("mobile-open");
+    sidebar.classList.toggle("mobile-open", !isOpen);
+    overlay.classList.toggle("visible", !isOpen);
+}
+window.toggleMobileSidebar = toggleMobileSidebar;
+</script>
+</body>
+</html>
